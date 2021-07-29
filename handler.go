@@ -16,8 +16,8 @@ import (
 // Typically you'd use the return value of CreateHandler as an argument to http.Handle
 // For example:
 // 	http.Handle("/", channelz.CreateHandler("/foo", grpcBindAddress))
-func CreateHandler(pathPrefix, grpcBindAddress string) http.Handler {
-	prefix := path.Join(pathPrefix, "channelz") + "/"
+func CreateHandler(pathPrefix, grpcServerName, grpcBindAddress string) http.Handler {
+	prefix := path.Join(pathPrefix, "channelz", grpcServerName) + "/"
 	handler := &grpcChannelzHandler{bindAddress: grpcBindAddress}
 	return createRouter(prefix, handler)
 }
