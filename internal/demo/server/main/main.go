@@ -12,9 +12,9 @@ import (
 	log "google.golang.org/grpc/grpclog"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	channelz "github.com/rantav/go-grpc-channelz"
-	"github.com/rantav/go-grpc-channelz/internal/demo/client"
-	"github.com/rantav/go-grpc-channelz/internal/demo/server"
+	channelz "github.com/leosunmo/go-grpc-channelz"
+	"github.com/leosunmo/go-grpc-channelz/internal/demo/client"
+	"github.com/leosunmo/go-grpc-channelz/internal/demo/server"
 )
 
 func main() {

@@ -5,7 +5,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	demoservice "github.com/rantav/go-grpc-channelz/internal/generated/service"
+	demoservice "github.com/leosunmo/go-grpc-channelz/internal/generated/service"
 )
 
 // New creates a new gRPC client
