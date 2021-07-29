@@ -21,13 +21,15 @@ func (h *grpcChannelzHandler) WriteServerPage(w io.Writer, server int64) {
 func (h *grpcChannelzHandler) writeServer(w io.Writer, server int64) {
 
 	type serverPageData struct {
-		Server  *channelzgrpc.Server
-		Sockets *channelzgrpc.GetServerSocketsResponse
+		Server   *channelzgrpc.GetServerResponse
+		Sockets  *channelzgrpc.GetServerSocketsResponse
+		ServerID int64
 	}
 
 	data := serverPageData{
-		Server:  h.getServer(server).Server,
-		Sockets: h.getServerSockets(server),
+		ServerID: server,
+		Server:   h.getServer(server),
+		Sockets:  h.getServerSockets(server),
 	}
 
 	if err := serverTemplate.Execute(w, data); err != nil {
@@ -67,6 +69,8 @@ func (h *grpcChannelzHandler) getServerSockets(serverID int64) *channelzgrpc.Get
 
 const serverTemplateHTML = `
 <table frame=box cellspacing=0 cellpadding=2 class="vertical">
+{{if .Server}}
+{{with .Server}}
     <tr>
 		<th>ServerId</th>
         <td>{{.Server.Ref.ServerId}}</td>
@@ -115,6 +119,7 @@ const serverTemplateHTML = `
 			</td>
 		</tr>
 	{{end}}
+{{end}}
 	{{with .Sockets.SocketRef}}
 		<tr>
 			<th>Sockets</th>
@@ -125,5 +130,8 @@ const serverTemplateHTML = `
 			</td>
 		</tr>
 	{{end}}
+{{else}}
+<th>Server {{.ServerID}} not found</th>
 </table>
+{{end}}
 `
