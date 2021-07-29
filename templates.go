@@ -2,9 +2,12 @@ package channelz
 
 import (
 	"io"
+	"net"
+	"strconv"
 	"text/template"
 	"time"
 
+	channelzgrpc "google.golang.org/grpc/channelz/grpc_channelz_v1"
 	log "google.golang.org/grpc/grpclog"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -32,8 +35,9 @@ func parseTemplate(name, html string) *template.Template {
 
 func getFuncs() template.FuncMap {
 	return template.FuncMap{
-		"timestamp": formatTimestamp,
-		"link":      createHyperlink,
+		"timestamp":  formatTimestamp,
+		"link":       createHyperlink,
+		"ipToString": ipToString,
 	}
 }
 
@@ -41,8 +45,28 @@ func formatTimestamp(ts *timestamppb.Timestamp) string {
 	return ts.AsTime().Format(time.RFC3339)
 }
 
+func ipToString(pbIP *channelzgrpc.Address) string {
+	if tcpIP := pbIP.GetTcpipAddress(); tcpIP != nil {
+		return net.IP(tcpIP.IpAddress).String() + ":" + strconv.FormatInt(int64(tcpIP.Port), 10)
+	}
+	if uds := pbIP.GetUdsAddress(); uds != nil {
+		return uds.GetFilename()
+	}
+
+	if oAddr := pbIP.GetOtherAddress(); oAddr != nil {
+		return oAddr.GetName()
+	}
+	return pbIP.String()
+}
+
 func writeHeader(w io.Writer, title string) {
-	if err := headerTemplate.Execute(w, headerData{Title: title}); err != nil {
+	// headerData contains data for the header template.
+	type headerData struct {
+		Title   string
+		HomeURL string
+	}
+
+	if err := headerTemplate.Execute(w, headerData{Title: title, HomeURL: homeURL}); err != nil {
 		log.Errorf("channelz: executing template: %v", err)
 	}
 }
@@ -51,11 +75,6 @@ func writeFooter(w io.Writer) {
 	if err := footerTemplate.Execute(w, nil); err != nil {
 		log.Errorf("channelz: executing template: %v", err)
 	}
-}
-
-// headerData contains data for the header template.
-type headerData struct {
-	Title string
 }
 
 var (
@@ -91,6 +110,9 @@ var (
 	</style>
 </head>
 <body>
+	<nav>
+	<a href="{{.HomeURL}}">Home</a>&nbsp;&nbsp;
+	</nav>
 <h1>{{.Title}}</h1>
 `
 

@@ -21,8 +21,11 @@ type channelzHandler interface {
 
 var pathPrefix string
 
+var homeURL string
+
 func createRouter(prefix string, handler channelzHandler) *chi.Mux {
 	pathPrefix = prefix
+	homeURL = prefix
 	router := chi.NewRouter()
 	router.Route(prefix, func(r chi.Router) {
 		r.Get("/", func(w http.ResponseWriter, r *http.Request) {

@@ -5,6 +5,7 @@ go 1.18
 require (
 	github.com/go-chi/chi/v5 v5.0.7
 	github.com/pkg/errors v0.9.1
+	github.com/rantav/go-grpc-channelz v0.0.4
 	github.com/stretchr/testify v1.7.1
 	golang.org/x/sync v0.0.0-20220513210516-0976fa681c29
 	google.golang.org/grpc v1.46.2
