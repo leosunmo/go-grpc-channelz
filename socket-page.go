@@ -110,9 +110,17 @@ const socketTemplateHTML = `
 	<tr>
 		<th>Options</th>
 		<td>
-			{{range .Socket.Data.Option}}
-				{{.Name}}: {{.Value}} {{with .Additional}}({{.}}){{end}}<br/>
-			{{end}}
+		{{with .Socket.Data.Option}}
+		<table>
+		{{range .}}
+			<tr>
+				<td>{{.Name}}:</td>
+				{{with .Value}}<td>{{.}}</td>{{end}}
+				<td>{{parseSocketOpts .Additional}}</td>
+			</tr>
+		{{end}}
+		</table>
+		{{end}}
 		</td>
 	</tr>
 	<tr>

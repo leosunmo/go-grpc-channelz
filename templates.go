@@ -1,15 +1,19 @@
 package channelz
 
 import (
+	"fmt"
 	"io"
 	"net"
 	"strconv"
+	"strings"
 	"text/template"
 	"time"
 
 	"github.com/golang/protobuf/ptypes/timestamp"
 	channelzgrpc "google.golang.org/grpc/channelz/grpc_channelz_v1"
 	log "google.golang.org/grpc/grpclog"
+	"google.golang.org/protobuf/encoding/prototext"
+	"google.golang.org/protobuf/types/known/anypb"
 )
 
 var (
@@ -35,9 +39,10 @@ func parseTemplate(name, html string) *template.Template {
 
 func getFuncs() template.FuncMap {
 	return template.FuncMap{
-		"timestamp":  formatTimestamp,
-		"link":       createHyperlink,
-		"ipToString": ipToString,
+		"timestamp":       formatTimestamp,
+		"link":            createHyperlink,
+		"ipToString":      ipToString,
+		"parseSocketOpts": parseSocketOpts,
 	}
 }
 
@@ -58,6 +63,24 @@ func ipToString(pbIP *channelzgrpc.Address) string {
 		return oAddr.GetName()
 	}
 	return pbIP.String()
+}
+
+func parseSocketOpts(socketOpt *anypb.Any) string {
+	m, err := socketOpt.UnmarshalNew()
+	if err != nil {
+		log.Errorf("channelz: failed to parse socket options")
+		return ""
+	}
+	switch m := m.(type) {
+	case *channelzgrpc.SocketOptionTimeout:
+		return fmt.Sprintf("Duration: %s", m.Duration.AsDuration().String())
+	case *channelzgrpc.SocketOptionLinger:
+		return fmt.Sprintf("Active: %v<br>Duration: %s", m.Active, m.Duration.AsDuration().String())
+	case *channelzgrpc.SocketOptionTcpInfo:
+		sm := prototext.Format(m)
+		return strings.Replace(sm, "\n", "<br>", -1)
+	}
+	return prototext.Format(m)
 }
 
 func writeHeader(w io.Writer, title string) {
