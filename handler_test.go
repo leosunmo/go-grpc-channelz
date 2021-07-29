@@ -10,8 +10,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 
-	"github.com/rantav/go-grpc-channelz/internal/demo/client"
-	"github.com/rantav/go-grpc-channelz/internal/demo/server"
+	"github.com/leosunmo/go-grpc-channelz/internal/demo/client"
+	"github.com/leosunmo/go-grpc-channelz/internal/demo/server"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
 	channelzSrv "google.golang.org/grpc/channelz/service"

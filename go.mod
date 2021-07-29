@@ -1,4 +1,4 @@
-module github.com/rantav/go-grpc-channelz
+module github.com/leosunmo/go-grpc-channelz
 
 go 1.18
 

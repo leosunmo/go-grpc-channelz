@@ -19,7 +19,18 @@ func (h *grpcChannelzHandler) WriteServerPage(w io.Writer, server int64) {
 //
 // It includes neither a header nor footer, so you can embed this data in other pages.
 func (h *grpcChannelzHandler) writeServer(w io.Writer, server int64) {
-	if err := serverTemplate.Execute(w, h.getServer(server)); err != nil {
+
+	type serverPageData struct {
+		Server  *channelzgrpc.Server
+		Sockets *channelzgrpc.GetServerSocketsResponse
+	}
+
+	data := serverPageData{
+		Server:  h.getServer(server).Server,
+		Sockets: h.getServerSockets(server),
+	}
+
+	if err := serverTemplate.Execute(w, data); err != nil {
 		log.Errorf("channelz: executing template: %v", err)
 	}
 }
@@ -37,6 +48,21 @@ func (h *grpcChannelzHandler) getServer(serverID int64) *channelzgrpc.GetServerR
 		return nil
 	}
 	return server
+}
+
+func (h *grpcChannelzHandler) getServerSockets(serverID int64) *channelzgrpc.GetServerSocketsResponse {
+	client, err := h.connect()
+	if err != nil {
+		log.Errorf("Error creating channelz client %+v", err)
+		return nil
+	}
+	ctx := context.Background()
+	serverSockets, err := client.GetServerSockets(ctx, &channelzgrpc.GetServerSocketsRequest{ServerId: serverID})
+	if err != nil {
+		log.Errorf("Error querying GetServerSockets %+v", err)
+		return nil
+	}
+	return serverSockets
 }
 
 const serverTemplateHTML = `
@@ -70,7 +96,7 @@ const serverTemplateHTML = `
         <td>{{.Server.Data.LastCallStartedTimestamp | timestamp}}</td>
 	</tr>
 	<tr>
-		<th>Sockets</th>
+		<th>ListenSockets</th>
 		<td>
 			{{range .Server.ListenSocket}}
 				<a href="{{link "socket" .SocketId}}"><b>{{.SocketId}}</b> {{.Name}}</a> <br/>
@@ -86,6 +112,16 @@ const serverTemplateHTML = `
 {{.Severity}} [{{.Timestamp | timestamp}}]: {{.Description}}
 				{{- end -}}
 				</pre>
+			</td>
+		</tr>
+	{{end}}
+	{{with .Sockets.SocketRef}}
+		<tr>
+			<th>Sockets</th>
+			<td>
+				{{ range . }}
+					<a href="{{link "socket" .SocketId}}"><b>{{.SocketId}}</b> {{.Name}}</a> <br/>
+				{{end}}
 			</td>
 		</tr>
 	{{end}}

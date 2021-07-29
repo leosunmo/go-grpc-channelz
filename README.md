@@ -50,7 +50,7 @@ grpcServer := grpc.NewServer()
 Now you should register the channelz web handler:
 
 ```go
-import channelz "github.com/rantav/go-grpc-channelz"
+import channelz "github.com/leosunmo/go-grpc-channelz"
 
 // Register the channelz handler and mount it to /foo.
 // Resources will be available at /foo/channelz
@@ -78,7 +78,7 @@ A complete example:
 import (
     "google.golang.org/grpc"
     channelzservice "google.golang.org/grpc/channelz/service"
-    channelz "github.com/rantav/go-grpc-channelz"
+    channelz "github.com/leosunmo/go-grpc-channelz"
 )
 
 grpcServer := grpc.NewServer()
