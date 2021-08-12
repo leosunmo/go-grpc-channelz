@@ -6,7 +6,7 @@ import (
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc"
 
-	demoservice "github.com/rantav/go-grpc-channelz/internal/generated/service"
+	demoservice "github.com/leosunmo/go-grpc-channelz/internal/generated/service"
 )
 
 type server struct{}
