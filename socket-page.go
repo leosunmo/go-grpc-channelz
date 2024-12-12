@@ -41,21 +41,21 @@ func (h *grpcChannelzHandler) getSocket(socketID int64) *channelzgrpc.GetSocketR
 
 const socketTemplateHTML = `
 <table frame=box cellspacing=0 cellpadding=2 class="vertical">
-    <tr>
+	<tr>
 		<th>SocketId</th>
-        <td>
+		<td>
 			{{.Socket.Ref.SocketId}}
 		</td>
 	</tr>
 	<tr>
 		<th>Socket Name</th>
-        <td>
+		<td>
 			{{.Socket.Ref.Name}}
 		</td>
 	</tr>
 	<tr>
 		<th>Socket Local -> Remote</th>
-        <td>
+		<td>
 			<pre>{{ipToString .Socket.Local}} -> {{ipToString .Socket.Remote}} {{with .Socket.RemoteName}}({{.}}){{end}}</pre>
 		</td>
 	</tr>
@@ -101,11 +101,11 @@ const socketTemplateHTML = `
 	</tr>
 	<tr>
 		<th>LocalFlowControlWindow</th>
-		<td>{{.Socket.Data.LocalFlowControlWindow.Value}}</td>
+		<td>{{if .Socket.Data.LocalFlowControlWindow}} {{.Socket.Data.LocalFlowControlWindow.Value}} {{else}} nil {{end}}</td>
 	</tr>
 	<tr>
 		<th>RemoteFlowControlWindow</th>
-		<td>{{.Socket.Data.RemoteFlowControlWindow.Value}}</td>
+		<td>{{if .Socket.Data.RemoteFlowControlWindow }} {{.Socket.Data.RemoteFlowControlWindow.Value}} {{else}} nil {{end}}</td>
 	</tr>
 	<tr>
 		<th>Options</th>
@@ -126,6 +126,6 @@ const socketTemplateHTML = `
 	<tr>
 		<th>Security</th>
 		<td>{{.Socket.Security}}</td>
-    </tr>
+	</tr>
 </table>
 `

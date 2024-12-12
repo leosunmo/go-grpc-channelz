@@ -28,6 +28,7 @@ func (h *grpcChannelzHandler) getChannel(channelID int64) *channelzgrpc.GetChann
 		log.Errorf("Error creating channelz client %+v", err)
 		return nil
 	}
+
 	ctx := context.Background()
 	channel, err := client.GetChannel(ctx, &channelzgrpc.GetChannelRequest{ChannelId: channelID})
 	if err != nil {

@@ -27,7 +27,7 @@ func (h *grpcChannelzHandler) connect() (channelzgrpc.ChannelzClient, error) {
 }
 
 func newChannelzClient(dialString string, opts ...grpc.DialOption) (channelzgrpc.ChannelzClient, error) {
-	conn, err := grpc.Dial(dialString, opts...)
+	conn, err := grpc.NewClient(dialString, opts...)
 	if err != nil {
 		return nil, errors.Wrapf(err, "error dialing to %s", dialString)
 	}
